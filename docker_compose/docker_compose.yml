@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  # Python App Service
+  app:
+    build: .
+    ports:
+      - "5000:5000"  # Map host port 5000 → container port 5000
+    environment:
+      - DATABASE_URL=postgresql://db_user:db_password@db:5432/db_name
+    depends_on:
+      - db
+    volumes:
+      - .:/app  # Mount current dir to /app in container (for live code reload)
+
+  # PostgreSQL Service
+  db:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=db_user
+      - POSTGRES_PASSWORD=db_password
+      - POSTGRES_DB=db_name
+    volumes:
+      - postgres_data:/var/lib/postgresql/data  # Persist DB data
+    ports:
+      - "5432:5432"  # Expose PostgreSQL port (optional for host access)
+
+volumes:
+  postgres_data:  # Named volume for PostgreSQL storage
